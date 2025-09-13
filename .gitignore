@@ -1,0 +1,47 @@
+# 環境変数ファイル（APIキーを含む）
+.env
+.env.local
+.env.*.local
+
+# Pythonキャッシュ
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 仮想環境
+venv/
+env/
+ENV/
+.venv/
+
+# IDEファイル
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ログファイル
+*.log
+logs/
+
+# データベースファイル（もし永続化する場合）
+*.db
+*.sqlite
+*.sqlite3
+
+# テスト関連
+.coverage
+htmlcov/
+.pytest_cache/
+
+# その他
+*.bak
+*.tmp
+temp/

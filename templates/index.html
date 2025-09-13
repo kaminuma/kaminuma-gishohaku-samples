@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI 振り返り分析サンプル</title>
+    <style>
+        /* 基本的なスタイル設定 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        /* ヘッダー */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        /* メインコンテンツ */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* セクション */
+        section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        /* 分析パラメータ設定 */
+        .parameter-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        /* ボタン */
+        .button-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* 活動データテーブル */
+        .activities-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* ムード表示 */
+        .mood {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .mood-1 { background: #e74c3c; }
+        .mood-2 { background: #e67e22; }
+        .mood-3 { background: #f39c12; }
+        .mood-4 { background: #27ae60; }
+        .mood-5 { background: #2ecc71; }
+        
+        /* 分析結果 */
+        .analysis-result {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 20px;
+            min-height: 200px;
+            white-space: normal;
+            line-height: 1.9;
+            border: 1px solid #e8e9ea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .analysis-result h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .analysis-result strong {
+            color: #444;
+            font-weight: 600;
+        }
+        
+        .analysis-content {
+            margin-bottom: 25px;
+            font-size: 15px;
+            line-height: 1.9;
+        }
+        
+        .analysis-content div {
+            margin: 18px 0;
+            line-height: 1.9;
+        }
+        
+        .analysis-content strong {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .analysis-meta {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+            color: #666;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+        
+        .error {
+            color: #e74c3c;
+            padding: 20px;
+            background: #ffe6e6;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        /* ローディングスピナー */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 説明文 */
+        .help-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* 日次ムードカード */
+        .mood-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px 8px;
+            text-align: center;
+            min-width: 100px;
+            flex: 1;
+            max-width: 120px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .mood-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .mood-date {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .mood-value {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+        
+        .mood-description {
+            font-size: 0.85em;
+            color: #555;
+        }
+        
+        .mood-note {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header>
+            <h1>🤖 Gemini AI 振り返り分析</h1>
+            <p class="subtitle">1週間の活動データを分析して、インサイトを提供します</p>
+        </header>
+        
+        <main>
+            <!-- 左側：分析設定と実行 -->
+            <section>
+                <h2>📊 分析設定</h2>
+                
+                <!-- 分析パラメータの選択 -->
+                <div class="parameter-group">
+                    <label for="focus">分析の焦点（Focus）</label>
+                    <select id="focus">
+                        <option value="mood">気分 - ムードパターンの分析</option>
+                        <option value="activities">活動 - 活動の多様性と配分</option>
+                        <option value="balance" selected>バランス - 生活バランスの評価</option>
+                        <option value="wellness">ウェルネス - 総合的な健康評価</option>
+                    </select>
+                    <p class="help-text">どの観点から分析するかを選択します</p>
+                </div>
+                
+                <div class="parameter-group">
+                    <label for="detail_level">詳細レベル（Detail Level）</label>
+                    <select id="detail_level">
+                        <option value="brief">簡潔 - 要点のみ（3-5項目）</option>
+                        <option value="standard" selected>標準 - 適度な詳細（洞察と提案）</option>
+                        <option value="detailed">詳細 - 徹底的な分析（5項目以上）</option>
+                    </select>
+                    <p class="help-text">分析結果の詳細度を選択します</p>
+                </div>
+                
+                <div class="parameter-group">
+                    <label for="response_style">応答スタイル（Response Style）</label>
+                    <select id="response_style">
+                        <option value="friendly" selected>親しみやすい - 友人のような語り口</option>
+                        <option value="professional">専門的 - データ重視の客観的分析</option>
+                        <option value="encouraging">励まし - モチベーション向上重視</option>
+                        <option value="casual">カジュアル - 気軽でリラックスした雰囲気</option>
+                    </select>
+                    <p class="help-text">分析結果の文体を選択します</p>
+                </div>
+                
+                <!-- 分析実行ボタン -->
+                <div class="button-container">
+                    <button id="analyzeBtn" onclick="runAnalysis()">
+                        🚀 分析を実行
+                    </button>
+                </div>
+                
+                <!-- 分析結果表示エリア -->
+                <div id="analysisResult" class="analysis-result" style="display: none;">
+                    <!-- ここに分析結果が表示される -->
+                </div>
+            </section>
+            
+            <!-- 右側：活動データ表示 -->
+            <section>
+                <h2>📅 サンプルデータ（過去1週間）</h2>
+                
+                <!-- 日次ムード表示 -->
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: #667eea; font-size: 1.1em; margin-bottom: 10px;">📊 日次ムード</h3>
+                    <div id="moodContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;">
+                        <!-- ここに日次ムードが表示される -->
+                    </div>
+                </div>
+                
+                <!-- 活動データ表示 -->
+                <h3 style="color: #667eea; font-size: 1.1em; margin-bottom: 10px;">📝 活動記録</h3>
+                <div class="activities-container">
+                    <table id="activitiesTable">
+                        <thead>
+                            <tr>
+                                <th>日付</th>
+                                <th>時間範囲</th>
+                                <th>活動</th>
+                                <th>カテゴリ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activitiesBody">
+                            <!-- ここに活動データが表示される -->
+                        </tbody>
+                    </table>
+                </div>
+                <p class="help-text" style="margin-top: 10px;">
+                    ※ このデータはアプリ起動時に自動生成されたサンプルです
+                </p>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        /**
+         * ページ読み込み時の初期化処理
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // 活動データを読み込む
+            loadActivities();
+            // 日次ムードデータを読み込む
+            loadDailyMoods();
+        });
+        
+        /**
+         * 活動データをサーバーから取得して表示
+         */
+        async function loadActivities() {
+            try {
+                // APIから活動データを取得
+                const response = await fetch('/api/activities');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    // テーブルに活動データを表示
+                    displayActivities(result.data);
+                } else {
+                    console.error('活動データの取得に失敗しました');
+                }
+            } catch (error) {
+                console.error('エラー:', error);
+                document.getElementById('activitiesBody').innerHTML = 
+                    '<tr><td colspan="4" style="text-align: center; color: red;">データの読み込みに失敗しました</td></tr>';
+            }
+        }
+        
+        /**
+         * 活動データをテーブルに表示
+         * @param {Array} activities - 活動データの配列
+         */
+        function displayActivities(activities) {
+            const tbody = document.getElementById('activitiesBody');
+            tbody.innerHTML = ''; // テーブル内容をクリア
+            
+            // 各活動をテーブル行として追加
+            activities.forEach(activity => {
+                const row = document.createElement('tr');
+                
+                // 時間範囲を作成
+                const timeRange = `${activity.start_time || '??:??'} - ${activity.end_time || '??:??'}`;
+                
+                // カテゴリ表示
+                let categoryDisplay = activity.category || '';
+                if (activity.category_sub) {
+                    categoryDisplay += `/${activity.category_sub}`;
+                }
+                
+                row.innerHTML = `
+                    <td>${activity.date}</td>
+                    <td>${timeRange}</td>
+                    <td>${activity.title || ''}<br><small style="color: #666;">${activity.contents || ''}</small></td>
+                    <td>${categoryDisplay}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        /**
+         * 日次ムードデータをサーバーから取得して表示
+         */
+        async function loadDailyMoods() {
+            try {
+                // APIから日次ムードデータを取得
+                const response = await fetch('/api/daily-moods');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    // ムードデータを表示
+                    displayDailyMoods(result.data);
+                } else {
+                    console.error('日次ムードデータの取得に失敗しました');
+                }
+            } catch (error) {
+                console.error('エラー:', error);
+                document.getElementById('moodContainer').innerHTML = 
+                    '<p style="color: red;">ムードデータの読み込みに失敗しました</p>';
+            }
+        }
+        
+        /**
+         * 日次ムードデータを表示
+         * @param {Array} moods - 日次ムードデータの配列
+         */
+        function displayDailyMoods(moods) {
+            const container = document.getElementById('moodContainer');
+            container.innerHTML = ''; // コンテナ内容をクリア
+            
+            // ムードデータを日付順にソート
+            moods.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // 各日のムードをカードとして表示
+            moods.forEach(mood => {
+                const card = document.createElement('div');
+                card.className = 'mood-card';
+                
+                // 日付をフォーマット
+                const date = new Date(mood.date);
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                const dateStr = `${month}/${day}`;
+                const dayOfWeek = date.toLocaleDateString('ja-JP', { weekday: 'short' });
+                
+                // ムードに応じた絵文字を取得
+                const moodEmojis = {
+                    1: '😫',
+                    2: '😞',
+                    3: '😐',
+                    4: '😊',
+                    5: '😄'
+                };
+                
+                const moodDescriptions = {
+                    1: 'とても悪い',
+                    2: '悪い',
+                    3: '普通',
+                    4: '良い',
+                    5: 'とても良い'
+                };
+                
+                const emoji = moodEmojis[mood.mood] || '❓';
+                const description = moodDescriptions[mood.mood] || '不明';
+                
+                // カードの背景色をムードに応じて設定
+                const moodColors = {
+                    1: '#ffe6e6',
+                    2: '#fff3e6',
+                    3: '#fffbe6',
+                    4: '#e6f7e6',
+                    5: '#e6ffe6'
+                };
+                card.style.backgroundColor = moodColors[mood.mood] || '#f0f0f0';
+                
+                card.innerHTML = `
+                    <div class="mood-date">${dateStr} (${dayOfWeek})</div>
+                    <div class="mood-value">${emoji}</div>
+                    <div><strong>${mood.mood}/5</strong></div>
+                    <div class="mood-description">${description}</div>
+                    ${mood.note ? `<div class="mood-note">"${mood.note}"</div>` : ''}
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        /**
+         * Gemini API分析を実行
+         */
+        async function runAnalysis() {
+            // UIの要素を取得
+            const button = document.getElementById('analyzeBtn');
+            const resultDiv = document.getElementById('analysisResult');
+            
+            // パラメータを取得
+            const parameters = {
+                focus: document.getElementById('focus').value,
+                detail_level: document.getElementById('detail_level').value,
+                response_style: document.getElementById('response_style').value
+            };
+            
+            // ボタンを無効化して、ローディング表示
+            button.disabled = true;
+            button.textContent = '⏳ 分析中...';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Gemini APIで分析しています...</div>';
+            
+            try {
+                // APIに分析リクエストを送信
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(parameters)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    // 分析結果を表示
+                    resultDiv.innerHTML = `
+                        <h3>✨ 分析結果</h3>
+                        <div class="analysis-content">
+                            ${formatAnalysisText(result.data.analysis_text)}
+                        </div>
+                        <div class="analysis-meta">
+                            <strong>📋 分析情報</strong><br><br>
+                            <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 15px; align-items: center;">
+                                <span>🎯 焦点:</span> <span>${getParameterLabel('focus', result.data.parameters.analysis_focus)}</span>
+                                <span>📊 詳細度:</span> <span>${getParameterLabel('detail_level', result.data.parameters.detail_level)}</span>
+                                <span>💬 スタイル:</span> <span>${getParameterLabel('response_style', result.data.parameters.response_style)}</span>
+                                <span>📈 分析対象:</span> <span>${result.data.activity_count}件の活動、${result.data.mood_count}日分のムード</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // エラーメッセージを表示
+                    resultDiv.innerHTML = `<div class="error">❌ ${result.message}</div>`;
+                }
+            } catch (error) {
+                // ネットワークエラーなどを表示
+                console.error('分析エラー:', error);
+                resultDiv.innerHTML = `<div class="error">❌ 分析中にエラーが発生しました: ${error.message}</div>`;
+            } finally {
+                // ボタンを再度有効化
+                button.disabled = false;
+                button.textContent = '🚀 分析を実行';
+            }
+        }
+        
+        /**
+         * 分析テキストを整形して表示
+         * @param {string} text - 分析結果のテキスト
+         */
+        function formatAnalysisText(text) {
+            return text
+                .trim()
+                .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #333; font-weight: 600;">$1</strong>')  // **太字** をHTMLに変換
+                .replace(/■/g, '<strong style="color: #667eea; font-size: 1.05em;">■</strong>')  // 箇条書き記号を強調
+                .replace(/\n{3,}/g, '\n\n')  // 3つ以上の連続改行を2つに
+                .replace(/\n\n/g, '</div><div style="margin: 18px 0; line-height: 1.8;">')  // 段落区切り
+                .replace(/\n/g, '<br>')  // 単一改行をbrに
+                .replace(/^/, '<div style="margin: 0; line-height: 1.8;">')  // 最初にdivタグ
+                .replace(/$/, '</div>')  // 最後にdivタグ閉じ
+        }
+        
+        /**
+         * パラメータ値から表示用ラベルを取得
+         * @param {string} type - パラメータの種類
+         * @param {string} value - パラメータの値
+         */
+        function getParameterLabel(type, value) {
+            const labels = {
+                focus: {
+                    mood: '気分',
+                    activities: '活動',
+                    balance: 'バランス',
+                    wellness: 'ウェルネス'
+                },
+                detail_level: {
+                    brief: '簡潔',
+                    standard: '標準',
+                    detailed: '詳細'
+                },
+                response_style: {
+                    friendly: '親しみやすい',
+                    professional: '専門的',
+                    encouraging: '励まし',
+                    casual: 'カジュアル'
+                }
+            };
+            
+            return labels[type][value] || value;
+        }
+    </script>
+</body>
+</html>

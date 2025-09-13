@@ -1,0 +1,16 @@
+# Gemini AI振り返り分析サンプルアプリケーション
+# 必要なPythonパッケージ一覧
+
+# Webフレームワーク
+Flask==2.3.3
+
+# Google Gemini API SDK
+google-generativeai==0.3.2
+
+# 環境変数管理
+python-dotenv==1.0.0
+
+# その他の依存関係（自動インストール）
+# - Werkzeug (Flask依存)
+# - Jinja2 (Flask依存)
+# - MarkupSafe (Jinja2依存)
